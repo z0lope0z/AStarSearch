@@ -12,6 +12,11 @@ class Node:
         self.current_cost = 0
         self.value = value
         self.board = board
+        self.parent = None
+
+    def traverse(self, next_node, cost):
+        next_node.parent = self
+        next_node.current_cost = cost
 
     def get_neighbors(self):
         neighbors = self._get_neighbors_unclean(self)
@@ -19,7 +24,7 @@ class Node:
         for neighbor in neighbors:
             try:
                 node = self.board.get_node(neighbor.x, neighbor.y)
-                if node.value != 1 and neighbor != None:
+                if node.value != 1 and neighbor != None and node.current_cost == 0:
                     return_neighbors.append(node)
             except AttributeError:
                 pass
@@ -74,20 +79,30 @@ class AStarSearch:
         self.open_nodes = []
 
     def search(self):
-        path = []
+        open_nodes= []
         while (self._compute_distance(self.current_node, self.end_node) != 0):
-            path.append(self.current_node)
+            open_nodes.append(self.current_node)
             self.current_node, is_shift = self._check_open_nodes()
             nearest_node = self._get_nearest_neighbor(self.current_node)
+            print "moving from %d,%d to %d,%d" % (self.current_node.x, self.current_node.y, nearest_node.x, nearest_node.y)
             self._move(nearest_node)
-            print "moved to %d,%d" % (nearest_node.x, nearest_node.y)
             time.sleep(1)
-        return path
+        path = []
+        self.backtrack(path, self.current_node)
+        return path 
     
+    def backtrack(self, path, node):
+        if node == self.start_node:
+            path.append(self.start_node)
+            return path.reverse()
+        else:
+            path.append(node)
+            self.backtrack(path, node.parent)
+
     def _move(self, node):
         movement_cost = self._movement_cost(self.current_node, node) 
+        self.current_node.traverse(node, movement_cost)
         self.current_node = node
-        self.current_node.current_cost = movement_cost  
 
     def _check_open_nodes(self):
         cheapest_node = self.current_node
