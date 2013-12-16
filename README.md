@@ -1,7 +1,7 @@
 A* Search and Greedy BFS
 ===========
 The A* Search Algorithm was derived from pseudocode found in Wikipedia.
-This is a solution for the 1st Machine Problem for CS-180 Artificial Intelligence
+This is a solution for the 1st Machine Problem in CS-180 Artificial Intelligence
 
 ### Configuration
 
