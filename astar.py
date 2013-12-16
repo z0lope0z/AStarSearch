@@ -36,7 +36,7 @@ class Node:
         #print "path cost for node %s: %s" % (node, cost)
         return cost
         #return self.current_cost + compute_path_cost(self.parent.current_cost, 0)
-
+    
     def collect_parents(self, node, parents):
         node = self
         parents=[]
@@ -81,7 +81,6 @@ class Node:
         neighbors.append(self.board.get_node(self.x+1, self.y))
         neighbors.append(self.board.get_node(self.x+1, self.y-1))
         neighbors.append(self.board.get_node(self.x, self.y-1))                                          
-        pdb.set_trace()
         return neighbors
 
     def __eq__(self, another):
@@ -135,8 +134,8 @@ class AStarSearch:
             print "current node : %s" % self.current_node
             if self.current_node == self.end_node:
                 path = []
-                self.backtrack(path, self.current_node)
-                return path                 
+                total, path = self.backtrack2(path, self.current_node, 0, 0)
+                return total, path 
             self._update_closed_nodes(self.current_node)
             #pdb.set_trace()
             for neighbor in self.current_node.get_neighbors():
@@ -164,8 +163,18 @@ class AStarSearch:
             #else:
             #    print "found a dead end for %s"  % self.current_node
             #pdb.set_trace()
-            time.sleep(1)
+            #time.sleep(1)
 
+    def backtrack2(self, path, node, cost, total):
+        if node == self.start_node:
+            path.append(self.start_node)
+            total = cost
+            return total, path
+        else:
+            path.append(node)
+            cost = cost + self._movement_cost(node, node.parent)
+            total, path2 = self.backtrack2(path, node.parent, cost, total)
+            return total, path
     
     def backtrack(self, path, node):
         if node == self.start_node:
@@ -329,9 +338,13 @@ class Runner():
                         cost_diagonal = float(line.split()[1])
         self.a_star_search = AStarSearch(start_node, end_node)
         self.a_star_search.set_movement_cost(cost_up, cost_down, cost_left, cost_right, cost_diagonal)
-        path = self.a_star_search.search()
-        for node in path:
-            print('%d,%d' % (node.x, node.y)),
+        total_cost, path = self.a_star_search.search()
+        with open('astar.out', 'w') as write_astar:
+            for node in path:
+                print('%d %d\n' % (node.y, node.x)),
+                write_astar.write('%d %d\n' % (node.y, node.x)),
+            print "total cost : %s" % total_cost
+            write_astar.write('%s' % total_cost)
         pdb.set_trace()
     
     def _convert_coordinates(self, x, y):
