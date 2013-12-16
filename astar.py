@@ -1,14 +1,8 @@
-import pdb
 import math
 import time
+import heapq
 
 
-def display(nodes):
-    return '%s' % ', '.join(map(str, nodes))
-
-def p(node):
-    print "%s, %s" % (node.x, node.y)
-    
 class Node:
     current_cost = None
 
@@ -33,9 +27,7 @@ class Node:
         for node in path:
             cost = cost + astar_search._movement_cost(previous, node)
             previous = node
-        #print "path cost for node %s: %s" % (node, cost)
         return cost
-        #return self.current_cost + compute_path_cost(self.parent.current_cost, 0)
     
     def collect_parents(self, node, parents):
         node = self
@@ -55,10 +47,8 @@ class Node:
                 if node.value != 1 and neighbor != None:
                     return_neighbors.append(node)
             except AttributeError:
-                print 'attribute error'
                 pass
             except IndexError:
-                print 'index error'
                 pass
         return return_neighbors
 
@@ -106,97 +96,6 @@ class Board:
         except:
             return None
     
-import heapq
-class AStarSearch:
-    cost_upper_left, cost_left, cost_lower_left, cost_bottom, cost_lower_right, cost_right, cost_upper_right, cost_top = 1, 1, 1, 1, 1, 1, 1, 1
-
-    def __init__(self, start_node, end_node):
-        self.start_node = start_node
-        self.end_node = end_node
-        self.current_node = start_node
-        self.open_nodes = []
-        self.closed_nodes = []
-
-    def search(self):
-        open_nodes = []
-        heapq.heappush(open_nodes, (0, self.start_node))
-        while (open_nodes):
-            self.current_node = heapq.heappop(open_nodes)[1]
-            print "current node : %s" % self.current_node
-            if self.current_node == self.end_node:
-                path = []
-                total, path = self.backtrack(path, self.current_node, 0, 0)
-                return total, path 
-            self.closed_nodes.append(self.current_node)
-            for neighbor in self.current_node.get_neighbors():
-                tentative_g_score = neighbor.compute_path_cost(self, None, 0) + self._movement_cost(self.current_node, neighbor)
-                tentative_f_score = tentative_g_score + self._heuristic(neighbor)
-                print "neighbor %s with cost : %s" % (neighbor, tentative_f_score)
-                if neighbor in self.closed_nodes and tentative_f_score >= neighbor.f_score:
-                   continue 
-                if neighbor not in open_nodes or tentative_f_score < neighbor.f_score:
-                    neighbor.parent = self.current_node
-                    neighbor.g_score = tentative_g_score
-                    neighbor.f_score = tentative_f_score 
-                    if neighbor not in open_nodes:
-                        heapq.heappush(open_nodes, (neighbor.f_score, neighbor)) 
-
-    def backtrack(self, path, node, cost, total):
-        if node == self.start_node:
-            path.append(self.start_node)
-            total = cost
-            return total, path
-        else:
-            path.append(node)
-            cost = cost + self._movement_cost(node, node.parent)
-            total, path2 = self.backtrack(path, node.parent, cost, total)
-            return total, path
-
-    def _compute_distance(self, node, neighbor):
-        movement_cost = self._movement_cost(node, neighbor)
-        if movement_cost == 0:
-            return 0
-        comp = movement_cost + self._heuristic(neighbor) + self.current_node.compute_path_cost(self, None, 0)
-        return comp
-
-    def _heuristic(self, node):
-        x_diff = abs(node.x-self.end_node.x)
-        y_diff = abs(node.y-self.end_node.y)
-        return math.sqrt(math.pow(x_diff, 2) + math.pow(y_diff, 2))
-
-    def _movement_cost(self, node, neighbor):
-        if node.x - 1 == neighbor.x:
-            if neighbor.y + 1 == node.y:
-                return self.cost_upper_left
-            elif neighbor.y == node.y:
-                return self.cost_left
-            elif neighbor.y - 1 == node.y:
-                return self.cost_lower_left
-        elif node.x == neighbor.x:
-            if neighbor.y + 1 == node.y:
-                return self.cost_top
-            elif neighbor.y == node.y:
-                return 0
-            elif neighbor.y - 1 == node.y:
-                return self.cost_bottom 
-        elif node.x + 1 == neighbor.x:
-            if neighbor.y + 1 == node.y:
-                return self.cost_upper_right
-            elif neighbor.y == node.y:
-                return self.cost_right
-            elif neighbor.y - 1 == node.y:
-                return self.cost_lower_right
-        print "sotoooop"
-        pdb.set_trace()
-        raise Exception('cost not found exception')
-
-    def set_movement_cost(self, left, down, right, up, diagonal):
-        self.cost_upper_left, self.cost_upper_right, self.cost_lower_left, self.cost_lower_right = diagonal, diagonal, diagonal, diagonal
-        self.cost_left, self.cost_down, self.cost_right, self.cost_up = left, down, right, up 
-
-    def d(self):
-        print "open nodes : %s" % display(self.open_nodes)
-        print "closed nodes : %s" % display(self.closed_nodes)
 
 class Search():
     cost_upper_left, cost_left, cost_lower_left, cost_bottom, cost_lower_right, cost_right, cost_upper_right, cost_top = 1, 1, 1, 1, 1, 1, 1, 1
@@ -259,7 +158,6 @@ class GreedyBFS(Search):
         heapq.heappush(open_nodes, (0, self.start_node))
         while (open_nodes):
             self.current_node = heapq.heappop(open_nodes)[1]
-            print "current node : %s" % self.current_node
             if self.current_node == self.end_node:
                 path = []
                 total, path = self.backtrack(path, self.current_node, 0, 0)
@@ -267,7 +165,6 @@ class GreedyBFS(Search):
             self.closed_nodes.append(self.current_node)
             for neighbor in self.current_node.get_neighbors():
                 score = self._heuristic(neighbor)
-                print "neighbor %s with cost : %s" % (neighbor, score)
                 if neighbor in self.closed_nodes and score >= neighbor.f_score:
                    continue 
                 if neighbor not in open_nodes or score < neighbor.f_score:
@@ -275,9 +172,35 @@ class GreedyBFS(Search):
                     # recycle f_score as score
                     neighbor.f_score = score 
                     if neighbor not in open_nodes:
-                        print "pushing %s with parent %s" % (neighbor, neighbor.parent)
                         heapq.heappush(open_nodes, (score, neighbor))
-           
+
+
+class AStarSearch(Search):
+    cost_upper_left, cost_left, cost_lower_left, cost_bottom, cost_lower_right, cost_right, cost_upper_right, cost_top = 1, 1, 1, 1, 1, 1, 1, 1
+
+    def search(self):
+        self.open_nodes = []
+        heapq.heappush(self.open_nodes, (0, self.start_node))
+        while (self.open_nodes):
+            self.current_node = heapq.heappop(self.open_nodes)[1]
+            if self.current_node == self.end_node:
+                path = []
+                total, path = self.backtrack(path, self.current_node, 0, 0)
+                return total, path 
+            self.closed_nodes.append(self.current_node)
+            for neighbor in self.current_node.get_neighbors():
+                tentative_g_score = neighbor.compute_path_cost(self, None, 0) + self._movement_cost(self.current_node, neighbor)
+                tentative_f_score = tentative_g_score + self._heuristic(neighbor)
+                if neighbor in self.closed_nodes and tentative_f_score >= neighbor.f_score:
+                   continue 
+                if neighbor not in self.open_nodes or tentative_f_score < neighbor.f_score:
+                    neighbor.parent = self.current_node
+                    neighbor.g_score = tentative_g_score
+                    neighbor.f_score = tentative_f_score 
+                    if neighbor not in self.open_nodes:
+                        heapq.heappush(self.open_nodes, (neighbor.f_score, neighbor)) 
+
+
 class Runner():
     def __init__(self):
         self.board = None
@@ -287,7 +210,6 @@ class Runner():
         self.end_node = None
 
     def read_file(self):
-        import pdb
         with open('input.txt','r') as file:
             rows = []
             x, y = 0, 0
@@ -302,7 +224,6 @@ class Runner():
                 elif i <= y:
                     rows.append(line.split())
                 else:
-                    print line
                     self.board.fill(rows)
                     if line.startswith('Source'):
                         y, x = self._convert_coordinates(int(line.split()[1]), int(line.split()[2]))
@@ -325,21 +246,20 @@ class Runner():
         self.greedy_bfs_search = GreedyBFS(self.start_node, self.end_node)
         self.greedy_bfs_search.set_movement_cost(self.cost_up, self.cost_down, self.cost_left, self.cost_right, self.cost_diagonal)
         total_cost, path = self.greedy_bfs_search.search()
+        path.reverse()
         with open('greedy.out', 'w') as write_greedy:
             for node in path:
                 write_greedy.write('%d %d\n' % (node.y, node.x))
-            print "total cost greedy : %s" % total_cost
             write_greedy.write('%s' % total_cost)
 
     def scan_astar(self):
         self.a_star_search = AStarSearch(self.start_node, self.end_node)
         self.a_star_search.set_movement_cost(self.cost_up, self.cost_down, self.cost_left, self.cost_right, self.cost_diagonal)
         total_cost, path = self.a_star_search.search()
+        path.reverse()
         with open('astar.out', 'w') as write_astar:
             for node in path:
-                print('%d %d\n' % (node.y, node.x)),
                 write_astar.write('%d %d\n' % (node.y, node.x)),
-            print "total cost : %s" % total_cost
             write_astar.write('%s' % total_cost)
 
     def _convert_coordinates(self, x, y):
@@ -351,4 +271,3 @@ runner.scan_greedy()
 runner = Runner()
 runner.read_file()
 runner.scan_astar()
-pdb.set_trace()
