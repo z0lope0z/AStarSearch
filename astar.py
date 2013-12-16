@@ -283,15 +283,17 @@ class Runner():
         self.board = None
         self.a_star_search = None
         self.greedy_search = None
+        self.start_node = None
+        self.end_node = None
 
     def read_file(self):
         import pdb
         with open('input.txt','r') as file:
             rows = []
             x, y = 0, 0
-            start_node = None
-            end_node = None
-            cost_up, cost_down, cost_left, cost_right, cost_diagonal = None, None, None, None, None
+            self.start_node = None
+            self.end_node = None
+            self.cost_up, self.cost_down, self.cost_left, self.cost_right, self.cost_diagonal = None, None, None, None, None
             for (i, line) in enumerate(file):
                 if i == 0:
                     y, x = line.split()
@@ -304,30 +306,34 @@ class Runner():
                     self.board.fill(rows)
                     if line.startswith('Source'):
                         y, x = self._convert_coordinates(int(line.split()[1]), int(line.split()[2]))
-                        start_node = self.board.get_node(x, y)
+                        self.start_node = self.board.get_node(x, y)
                     elif line.startswith('Destination'):
                         y, x = self._convert_coordinates(int(line.split()[1]), int(line.split()[2]))
-                        end_node = self.board.get_node(x, y)
+                        self.end_node = self.board.get_node(x, y)
                     elif line.startswith('Up'):
-                        cost_up = float(line.split()[1])
+                        self.cost_up = float(line.split()[1])
                     elif line.startswith('Down'):
-                        cost_down = float(line.split()[1])
+                        self.cost_down = float(line.split()[1])
                     elif line.startswith('Left'):
-                        cost_left = float(line.split()[1])
+                        self.cost_left = float(line.split()[1])
                     elif line.startswith('Right'):
-                        cost_right = float(line.split()[1])
+                        self.cost_right = float(line.split()[1])
                     elif line.startswith('Diagonal'):
-                        cost_diagonal = float(line.split()[1])
-        self.greedy_bfs_search = GreedyBFS(start_node, end_node)
-        self.greedy_bfs_search.set_movement_cost(cost_up, cost_down, cost_left, cost_right, cost_diagonal)
+                        self.cost_diagonal = float(line.split()[1])
+
+    def scan_greedy(self):
+        self.greedy_bfs_search = GreedyBFS(self.start_node, self.end_node)
+        self.greedy_bfs_search.set_movement_cost(self.cost_up, self.cost_down, self.cost_left, self.cost_right, self.cost_diagonal)
         total_cost, path = self.greedy_bfs_search.search()
         with open('greedy.out', 'w') as write_greedy:
             for node in path:
                 write_greedy.write('%d %d\n' % (node.y, node.x))
             print "total cost greedy : %s" % total_cost
             write_greedy.write('%s' % total_cost)
-        self.a_star_search = AStarSearch(start_node, end_node)
-        self.a_star_search.set_movement_cost(cost_up, cost_down, cost_left, cost_right, cost_diagonal)
+
+    def scan_astar(self):
+        self.a_star_search = AStarSearch(self.start_node, self.end_node)
+        self.a_star_search.set_movement_cost(self.cost_up, self.cost_down, self.cost_left, self.cost_right, self.cost_diagonal)
         total_cost, path = self.a_star_search.search()
         with open('astar.out', 'w') as write_astar:
             for node in path:
@@ -335,14 +341,14 @@ class Runner():
                 write_astar.write('%d %d\n' % (node.y, node.x)),
             print "total cost : %s" % total_cost
             write_astar.write('%s' % total_cost)
-        pdb.set_trace()
-    
+
     def _convert_coordinates(self, x, y):
         return x, y
 
 runner = Runner()
 runner.read_file()
-pdb.set_trace()   
-board = Board(5,5)
-board.get_node(2,2)
+runner.scan_greedy()
+runner = Runner()
+runner.read_file()
+runner.scan_astar()
 pdb.set_trace()
