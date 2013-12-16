@@ -2,6 +2,11 @@ import math
 import time
 import heapq
 
+def display(nodes):
+    '''
+    Helper function to display the nodes in a list
+    '''
+    return '%s' % ', '.join(map(str, nodes))
 
 class Node:
     current_cost = None
@@ -176,7 +181,6 @@ class GreedyBFS(Search):
 
 
 class AStarSearch(Search):
-    cost_upper_left, cost_left, cost_lower_left, cost_bottom, cost_lower_right, cost_right, cost_upper_right, cost_top = 1, 1, 1, 1, 1, 1, 1, 1
 
     def search(self):
         self.open_nodes = []
@@ -221,7 +225,7 @@ class Runner():
                     y, x = line.split()
                     y, x = int(x), int(y)
                     self.board = Board(rows=y, columns=x)
-                elif i <= y:
+                elif i <= x:
                     rows.append(line.split())
                 else:
                     self.board.fill(rows)
