@@ -318,14 +318,14 @@ class Runner():
                         cost_right = float(line.split()[1])
                     elif line.startswith('Diagonal'):
                         cost_diagonal = float(line.split()[1])
-        self.greedy_bfs_search = GreedyBFS(start_node, end_node)
-        self.greedy_bfs_search.set_movement_cost(cost_up, cost_down, cost_left, cost_right, cost_diagonal)
-        total_cost, path = self.greedy_bfs_search.search()
-        with open('greedy.out', 'w') as write_greedy:
-            for node in path:
-                write_greedy.write('%d %d\n' % (node.y, node.x))
-            print "total cost greedy : %s" % total_cost
-            write_greedy.write('%s' % total_cost)
+        #self.greedy_bfs_search = GreedyBFS(start_node, end_node)
+        #self.greedy_bfs_search.set_movement_cost(cost_up, cost_down, cost_left, cost_right, cost_diagonal)
+        #total_cost, path = self.greedy_bfs_search.search()
+        #with open('greedy.out', 'w') as write_greedy:
+        #    for node in path:
+        #        write_greedy.write('%d %d\n' % (node.y, node.x))
+        #    print "total cost greedy : %s" % total_cost
+        #    write_greedy.write('%s' % total_cost)
         self.a_star_search = AStarSearch(start_node, end_node)
         self.a_star_search.set_movement_cost(cost_up, cost_down, cost_left, cost_right, cost_diagonal)
         total_cost, path = self.a_star_search.search()
