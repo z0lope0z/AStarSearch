@@ -193,7 +193,7 @@ class AStarSearch(Search):
                 return total, path 
             self.closed_nodes.append(self.current_node)
             for neighbor in self.current_node.get_neighbors():
-                tentative_g_score = neighbor.compute_path_cost(self, None, 0) + self._movement_cost(self.current_node, neighbor)
+                tentative_g_score = self.current_node.compute_path_cost(self, None, 0) + self._movement_cost(self.current_node, neighbor)
                 tentative_f_score = tentative_g_score + self._heuristic(neighbor)
                 if neighbor in self.closed_nodes and tentative_f_score >= neighbor.f_score:
                    continue 
