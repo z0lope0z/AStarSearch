@@ -9,6 +9,7 @@ This is a solution for the 1st Machine Problem in CS-180 Artificial Intelligence
 - Stores explored nodes inside a list.
 - With each step in the loop, it pops the unexplored node's priority queue and adds it to the list of explored nodes
 - Under various conditions, the current node's neighbors are added to the unexplored nodes priority queue along with its computed heuristic value.
+- The Greedy BFS algorithm is just a modified A* Search wherein it does not keep track of a node's distance to the root node.
 
 ### Configuration
 
