@@ -3,6 +3,13 @@ A* Search and Greedy BFS
 The A* Search Algorithm was derived from pseudocode found in Wikipedia.
 This is a solution for the 1st Machine Problem in CS-180 Artificial Intelligence
 
+#### Quick Implementation Details
+- A node's heuristic cost is derived from its current distance to the root node, the movement cost (left, right, diagonal) and its [Euclidean Distance] to the end node
+- Stores unexplored nodes inside a priority queue using the heuristic cost as its key.
+- Stores explored nodes inside a list.
+- With each step in the loop, it pops the unexplored node's priority queue and adds it to the list of explored nodes
+- Under various conditions, the current node's neighbors are added to the unexplored nodes priority queue along with its computed heuristic value.
+
 ### Configuration
 
 Sample **input.txt**:
@@ -45,5 +52,6 @@ Sources:
 
 [A* Search - Wikipedia](http://en.wikipedia.org/wiki/A*_search_algorithm)
 
+[Euclidean Distance]: http://en.wikipedia.org/wiki/Euclidean_distance
 
 [A* Search - Policy Almanac](http://www.policyalmanac.org/games/aStarTutorial.htm)
